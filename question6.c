@@ -16,8 +16,8 @@ void print_WELCOME_MSG() {
 
 // Function to print the prompt and exit status or signal
 void print_PROMPT(int status, long exec_time_ms) {
-
-    if (WIFEXITED(status)) { 
+    
+    if (WIFEXITED(status)) {
         char exit_msg[50];
         int exit_code = WEXITSTATUS(status);
         snprintf(exit_msg, sizeof(exit_msg), "[exit:%d|%ldms]", exit_code, exec_time_ms);
@@ -32,20 +32,35 @@ void print_PROMPT(int status, long exec_time_ms) {
     write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
 }
 
+// Function to split a command into arguments
+void split_command_into_args(char *input, char **argv) {
+    char *token = strtok(input, " "); // We break the input string into space-separated tokens
+    int index = 0;
+
+    // Browse each extracted token
+    while (token != NULL) {
+        argv[index++] = token; // We add the current token to the argv array
+        token = strtok(NULL, " "); // Go to next token
+    }
+    argv[index] = NULL;  
+}
+
 int main() {
     char command[1024];
     int status = 0;
-    long exec_time_ms = 0; // Execution time in ms
+    long exec_time_ms = 0;
+    char *argv[100]; // Array of pointers to store command arguments
 
     print_WELCOME_MSG();
 
     while (1) {
-        struct timespec start_time, end_time; // We declare 2 variable to store start and end times
-        print_PROMPT(status, exec_time_ms); // We display the prompt with the command's previous status and execution time
+        struct timespec start_time, end_time;
+
+        print_PROMPT(status, exec_time_ms);
 
         ssize_t number_characters = read(STDIN_FILENO, command, sizeof(command) - 1);
 
-        if (number_characters == 0) { 
+        if (number_characters == 0) {
             write(STDOUT_FILENO, EXIT_MSG, strlen(EXIT_MSG));
             break;
         }
@@ -57,27 +72,28 @@ int main() {
             break;
         }
 
-        // We measure the time before forking
         clock_gettime(CLOCK_REALTIME, &start_time);
+
+        split_command_into_args(command, argv); // Split command into arguments for execvp
 
         pid_t pid = fork();
 
         if (pid == 0) { 
-            if (execlp(command, command, (char *)NULL) == -1) {
-                perror("Command execution error");
+            char pid_msg[50];
+            int pid_length = snprintf(pid_msg, sizeof(pid_msg), "Child's PID : %d\n", getpid()); // Display son PID
+            write(STDOUT_FILENO, pid_msg, pid_length);
+            
+            if (execvp(argv[0], argv) == -1) {
+                perror("Command execution failed");
                 exit(-1); 
             }
-        } else if (pid > 0) { // Code is executed by the parent
-            waitpid(pid, &status, 0); // We wait for the child to finish
+        } else if (pid > 0) {
+            waitpid(pid, &status, 0); 
 
-            // We measure the time after the child process has finished
             clock_gettime(CLOCK_REALTIME, &end_time);
 
-            // We calculate execution time in milliseconds
             exec_time_ms = (end_time.tv_sec - start_time.tv_sec) * 1000 +
                            (end_time.tv_nsec - start_time.tv_nsec) / 1000000;
-        } else {
-            perror("Fork failed");
         }
     }
     return 0;

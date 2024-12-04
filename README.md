@@ -1,18 +1,30 @@
 # ENSEASH
-Dans le cadre de notre TP de synthèse, l'objectif est de réaliser un micro shell, affichant les codes de sortie et les temps d’exécution des programmes lancés.
+As part of our synthesis practical work, our aim is to create a micro shell, displaying the output codes and execution times of the programs we run.
 
 ## Organisation
-Ce TP a été réalisé par Mohamed HAMTINE et Wilal HASSANI (2G2/TD1/TP1) et s'étend sur deux séances de 8 heures chacune. Nous avons structuré le projet de manière à ce que chaque fichier corresponde à une question différente.
+This project was carried out by Mohamed HAMTINE and Wilal HASSANI (2G2/TD1/TP1) and covers two 8-hour sessions. We have structured the project so that each file corresponds to a different question.
 
-## Fonctionnement
-Avant d'exécuter le code, il est important de s'assurer que le chemin est bien défini pour vérifier que l'on se trouve dans le bon répertoire de travail pour exécuter nos codes. Pour cela, on peut utiliser la commande "pwd". Si on n'est pas dans le bon répertoire, il faut utiliser la commande suivante : cd /workspaces/codespaces-blank/enseash.
+## How it works
+Before executing the code, it's important to ensure that the path is correctly defined, to check that we're in the right working directory to execute our code. To do this, use the “pwd” command. If you're not in the right directory, use the following command: cd /workspaces/codespaces-blank/enseash.
 
-Pour vérifier que l'on est dans le bon répertoire, on peut utiliser la commande "ls" qui permet de lister le contenu du répertoire courant, y compris les fichiers et les sous-répertoires.
+To check that you're in the right directory, you can use the “ls” command, which lists the contents of the current directory, including files and sub-directories.
 
-Ensuite, pour exécuter le code de chaque fichier (chaque question), il suffit d'écrire dans le terminal :
-- make (pour tout compiler)
-- gcc -o enseash question1.c (exemple pour le fichier question1.c)
+Then, to execute the code for each file (each question), simply write :
+- make (to compile everything)
+- gcc -o enseash question1.c (example for file question1.c)
 - ./enseash
 
-## Pour la question 2
-Lors de la réalisation des tests, nous avons utilisé des commandes comme "date", "cal" ou "clear". Attention, la commande "fortune" ne fonctionne pas sur cet IDE.
+## For question 2
+In our tests, we used commands such as "date", "cal" or "clear". Please note that the "fortune" command does not work on this IDE.
+
+## For question 5
+To test the time count, we used the sleep 5 command, which causes the program to pause for 5s. The execution time displayed is indeed 5s "[exit:0|5002ms]".
+
+## For question 6
+To test time counting, we opened a new terminal. In the main terminal, after executing a command, the child's PID is displayed.
+
+We then executed the "sleep 100" command to make the child process sleep (pause) for 100 seconds. 
+
+In the second terminal, we used the "kill -9 [son's PID]" command to kill the child process. 
+
+Returning to the main terminal, we found that the child process had indeed been killed and that the prompt displayed "[sign:9|64545ms]", indicating when it had been killed.
